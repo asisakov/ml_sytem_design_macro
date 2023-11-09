@@ -8,7 +8,7 @@ jobs:
     runs-on: arc-runners
     steps:
     - run: echo "This job uses runner scale set runners!"
-  Test Docker:
+  Test-Docker:
     runs-on: arc-runners
     container:
       image: python:slim-bullseye
