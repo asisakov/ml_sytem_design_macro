@@ -3,16 +3,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  Explore-GitHub-Actions:
-    # You need to use the INSTALLATION_NAME from the previous step
-    runs-on: arc-runners
-    steps:
-    - run: echo "This job uses runner scale set runners!"
   Test-Docker:
     runs-on: arc-runners
     container:
       image: python:slim-bullseye
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Check python version
         run: python --version
       - name: Check os release
