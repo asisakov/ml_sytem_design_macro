@@ -1,4 +1,4 @@
-name: Actions Runner Controller Demo
+name: compredict k8s run actions
 on:
   workflow_dispatch:
 
@@ -8,8 +8,6 @@ jobs:
     container:
       image: python:slim-bullseye
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Check python version
         run: python --version
       - name: Check os release
@@ -20,3 +18,12 @@ jobs:
         run: ls -al
       - name: Diplay env
         run: env
+  Test-Buildah:
+    runs-on: arc-runners
+    container:
+      image: quay.io/buildah/stable:v1.32.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: buildah bud -f Dockerfile .
