@@ -17,3 +17,9 @@ jobs:
         run: python --version
       - name: Check os release
         run: cat /etc/*release*
+      - name: Display pwd
+        run: pwd
+      - name: Display ls
+        run: ls -al
+      - name: Diplay env
+        run: env
