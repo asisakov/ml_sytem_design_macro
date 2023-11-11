@@ -23,6 +23,8 @@ jobs:
     container:
       image: gcr.io/kaniko-project/executor:debug
     steps:
+      - name: Sleep
+        run: sleep 600
       - name: Checkout
         uses: actions/checkout@v4
       - name: Symlink auth
