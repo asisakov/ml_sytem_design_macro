@@ -21,13 +21,11 @@ jobs:
   Test-Buildah:
     runs-on: arc-runners
     container:
-      image: gcr.io/kaniko-project/executor:debug
+      image: r.compredict.xyz/kaniko:latest
     steps:
-      - name: Sleep
-        run: sleep 600
       - name: Checkout
         uses: actions/checkout@v4
       - name: Symlink auth
         run: ln -s /etc/runners-secrets/kaniko.json /kaniko/.docker/config.json
       - name: Build and push
-        run: /kaniko/executor -f Dockerfile -c . -d r.compredict.xyz/foo:1
+        run: /bin/kaniko-executor -f Dockerfile -c . -d r.compredict.xyz/foo:1
