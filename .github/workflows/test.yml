@@ -21,9 +21,11 @@ jobs:
   Test-Buildah:
     runs-on: arc-runners
     container:
-      image: quay.io/buildah/stable:v1.32.2
+      image: gcr.io/kaniko-project/executor:debug
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build
-        run: buildah bud -f Dockerfile .
+      - name: Symlink auth
+        run: ln -s /etc/runners-secrets/kaniko.json /kaniko/.docker/config.json
+      - name: Build and push
+        run: /kaniko/executor -f Dockerfile -c . -d r.compredict.xyz/foo:1
