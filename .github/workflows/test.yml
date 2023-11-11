@@ -18,7 +18,7 @@ jobs:
         run: ls -al
       - name: Diplay env
         run: env
-  Test-Buildah:
+  Test-Kaniko:
     runs-on: arc-runners
     container:
       image: r.compredict.xyz/kaniko:latest
