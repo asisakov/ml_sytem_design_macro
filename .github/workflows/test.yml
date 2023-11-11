@@ -29,5 +29,7 @@ jobs:
         run: ln -s /etc/runners-secrets/kaniko.json /kaniko/.docker/config.json
       - name: CAT Symlink auth
         run: cat /kaniko/.docker/config.json
+      - name: sleep
+        run: sleep 300
       - name: Build and push
         run: /bin/kaniko-executor -f Dockerfile -c . -d r.compredict.xyz/foo:1 --verbosity=trace
