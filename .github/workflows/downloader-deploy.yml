@@ -5,7 +5,7 @@ on:
 
 jobs:
   Deploy-Downloader:
-    runs-on: my-runners
+    runs-on: compredict-runners
     container:
       image: dtzar/helm-kubectl:3.13
     steps:
