@@ -5,9 +5,7 @@ on:
 
 jobs:
   build-n-push-downloader:
-    runs-on:
-      - my-runners
-      - compredict-runners
+    runs-on: arc-runners
     container:
       image: dtzar/helm-kubectl:3.13
     steps:
