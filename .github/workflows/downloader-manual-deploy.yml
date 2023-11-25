@@ -1,0 +1,7 @@
+name: Manual: deploy downloader
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-downloader:
+    uses: ./.github/workflows/downloader-deploy.yml
