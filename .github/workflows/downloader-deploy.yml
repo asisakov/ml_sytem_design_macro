@@ -5,7 +5,7 @@ on:
 
 jobs:
   Deploy-Downloader:
-    runs-on: arc-runners
+    runs-on: my-runners
     container:
       image: dtzar/helm-kubectl:3.13
     steps:
