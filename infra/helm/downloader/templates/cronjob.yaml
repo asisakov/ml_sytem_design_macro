@@ -1,7 +1,53 @@
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "downloader.name" . }}
+  name: {{ include "downloader.name" . }}-interval-1h
+spec:
+  schedule: "* 0,8,16 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+            - name: registry-compredict
+          containers:
+          - name: {{ include "downloader.name" . }}
+            image: r.compredict.xyz/downloader:latest
+            imagePullPolicy: Always
+            args:
+              - --dir
+              - forward
+              - --interval
+              - 1h
+            env:
+              - name: CLICKHOUSE_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_PORT
+              - name: CLICKHOUSE_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_HOST
+              - name: CLICKHOUSE_USER
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_USER_RW
+              - name: CLICKHOUSE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: compredict-secrets
+                    key: CLICKHOUSE_USER_RW_PASSWORD
+          restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "downloader.name" . }}-interval-1d
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
@@ -19,7 +65,7 @@ spec:
               - --dir
               - forward
               - --interval
-              - 1h
+              - 1d
             env:
               - name: CLICKHOUSE_PORT
                 valueFrom:
