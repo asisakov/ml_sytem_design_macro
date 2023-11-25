@@ -1,0 +1,17 @@
+name: deploy downloader
+
+on:
+  workflow_call:
+
+jobs:
+  build-n-push-downloader:
+    runs-on:
+      - my-runners
+      - compredict-runners
+    container:
+      image: dtzar/helm-kubectl:3.13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy downloader
+        run: cd infra/helm && helm upgrade -n compredict downloader downloader

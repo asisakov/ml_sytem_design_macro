@@ -1,0 +1,9 @@
+name: build and deploy downloader
+on:
+  push:
+    paths:
+      - infra/helm/downloader/**
+
+jobs:
+  build-n-push-downloader:
+    uses: ./.github/workflows/downloader-deploy.yml

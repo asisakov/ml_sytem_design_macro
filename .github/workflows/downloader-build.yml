@@ -1,0 +1,19 @@
+name: build and push downloader
+
+on:
+  workflow_call:
+
+jobs:
+  build-n-push-downloader:
+    runs-on:
+      - my-runners
+      - compredict-runners
+    container:
+      image: quay.io/buildah/stable:v1.32.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and push
+        run: cd src/downloader && buildah bud --authfile /etc/runners-secrets/kaniko.json -f Dockerfile -t r.compredict.xyz/downloader:latest .
+      - name: push
+        run: buildah push --authfile /etc/runners-secrets/kaniko.json r.compredict.xyz/downloader:latest
