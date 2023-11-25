@@ -16,7 +16,10 @@ spec:
             image: r.compredict.xyz/downloader:latest
             imagePullPolicy: Always
             args:
-              - --interval 1h
+              - --dir
+              - forward
+              - --interval
+              - 1h
             env:
               - name: CLICKHOUSE_PORT
                 valueFrom:
