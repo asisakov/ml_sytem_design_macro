@@ -49,7 +49,7 @@ kind: CronJob
 metadata:
   name: {{ include "downloader.name" . }}-interval-1d
 spec:
-  schedule: "* * * * *"
+  schedule: "* 0,12 * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
