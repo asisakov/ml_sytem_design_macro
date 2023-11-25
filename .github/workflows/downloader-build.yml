@@ -5,9 +5,7 @@ on:
 
 jobs:
   build-n-push-downloader:
-    runs-on:
-      - my-runners
-      - compredict-runners
+    runs-on: compredict-runners
     container:
       image: quay.io/buildah/stable:v1.32.2
     steps:
