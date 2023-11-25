@@ -1,4 +1,4 @@
-name: Manual: deploy downloader
+name: "Manual: deploy downloader"
 on:
   workflow_dispatch:
 
