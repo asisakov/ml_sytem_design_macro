@@ -129,7 +129,8 @@ class YFDownloader:
         data = self.download_ticker(ticker=ticker, interval=interval,
                                     start=max_ts, end=now_ts)
 
-        filtered = [r for r in data if r[2] > max_ts]
+        filtered = [r for r in data
+                    if r[2].replace(tzinfo=timezone.utc) > max_ts]
 
         self.logging.info(f'Filtered out {len(filtered)} of {len(data)}')
 
