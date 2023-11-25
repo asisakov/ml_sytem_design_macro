@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  build-n-push-downloader:
+  Deploy-Downloader:
     runs-on: arc-runners
     container:
       image: dtzar/helm-kubectl:3.13
