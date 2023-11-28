@@ -1,0 +1,7 @@
+name: "Manual: build downloader"
+on:
+  workflow_dispatch:
+
+jobs:
+  Build-N-Push-Downloader:
+    uses: ./.github/workflows/downloader-build.yml

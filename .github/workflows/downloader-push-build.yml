@@ -1,0 +1,9 @@
+name: Build downloader
+on:
+  push:
+    paths:
+      - src/downloader/**
+
+jobs:
+  Build-N-Push-Downloader:
+    uses: ./.github/workflows/downloader-build.yml
