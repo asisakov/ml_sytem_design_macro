@@ -6,12 +6,13 @@ import logging
 import os
 
 
-@click.command()
-@click.argument("stock_name", type=str)
-@click.argument("timeframe", type=str)
-@click.argument("out_file_path", type=click.Path(), default="../../data/interim/stockdata.csv.gz")
-@click.argument("column_for_timestamp", type=str, default="ts")
-def make_dataset(
+# TBD: switch back click
+# @click.command()
+# @click.argument("stock_name", type=str)
+# @click.argument("timeframe", type=str)
+# @click.argument("out_file_path", type=click.Path(), default="../../data/interim/stockdata.csv.gz")
+# @click.argument("column_for_timestamp", type=str, default="ts")
+def create_dataset_for_stock(
     stock_name: str,
     timeframe: str,
     out_file_path: str,
@@ -22,45 +23,53 @@ def make_dataset(
     """
     logger = logging.getLogger(__name__)
 
-    # TBD: check exceptions
-    logger.info("Reading creds from .env file")
-    clickhouse_host = os.getenv("CLICKHOUSE_HOST")
-    clickhouse_port = int(os.getenv("CLICKHOUSE_PORT"))
-    clickhouse_db = os.getenv("CLICKHOUSE_DB")
-    clickhouse_user = os.getenv("CLICKHOUSE_USER")
-    clickhouse_password = os.getenv("CLICKHOUSE_PASSWORD")
+    try:
 
-    logger.info("Start loading data from ClickHouse")
-    client = clickhouse_connect.get_client(
-        host=clickhouse_host,
-        port=clickhouse_port,
-        database=clickhouse_db,
-        username=clickhouse_user,
-        password=clickhouse_password
-    )
+        logger.info("Reading creds from .env file")
+        clickhouse_host = os.getenv("CLICKHOUSE_HOST")
+        clickhouse_port = int(os.getenv("CLICKHOUSE_PORT"))
+        clickhouse_db = os.getenv("CLICKHOUSE_DB")
+        clickhouse_user = os.getenv("CLICKHOUSE_USER")
+        clickhouse_password = os.getenv("CLICKHOUSE_PASSWORD")
 
-    df = client.query_df(
-        f'''
-        SELECT
-            *
-        FROM
-            stock
-        WHERE
-            stock_name='{stock_name}'
-            AND
-            interval='{timeframe}'
-       '''
-    )
+        logger.info("Start loading data from ClickHouse")
+        client = clickhouse_connect.get_client(
+            host=clickhouse_host,
+            port=clickhouse_port,
+            database=clickhouse_db,
+            username=clickhouse_user,
+            password=clickhouse_password
+        )
 
-    assert isinstance(df, pd.DataFrame)
-    logger.info(f"Got dataframe with shape: {df.shape}")
+        df = client.query_df(
+            f'''
+            SELECT
+                *
+            FROM
+                stock
+            WHERE
+                stock_name='{stock_name}'
+                AND
+                interval='{timeframe}'
+           '''
+        )
 
-    df.set_index(column_for_timestamp, drop=True, inplace=True,)
+        assert isinstance(df, pd.DataFrame)
+        logger.info(f"Got dataframe with shape: {df.shape}")
+        if len(df) == 0:
+            raise Exception(f"Empty dataframe received for {stock_name=} and {timeframe=}.")
 
-    # Write to output file with possible compression (according to file extension)
-    out_file_abs_path = os.path.abspath(out_file_path)
-    df.to_csv(out_file_abs_path, compression="infer")
-    logger.info(f"Saved dataframe to file : {out_file_abs_path}")
+        df.set_index(column_for_timestamp, drop=True, inplace=True,)
+        # TBD: find the code for cheking datetime
+
+        # Write to output file with possible compression (according to file extension)
+        out_file_abs_path = os.path.abspath(out_file_path)
+        df.to_csv(out_file_abs_path, compression="infer")
+        logger.info(f"Saved dataframe to file : {out_file_abs_path}")
+
+    except Exception as e:
+        logger.error(f"Exception in create_dataset_for_stock; main params: {stock_name=}, {timeframe=}, "
+                     f"{column_for_timestamp=}. Details: %s", e)
 
 
 if __name__ == "__main__":
@@ -74,4 +83,4 @@ if __name__ == "__main__":
     # load up the .env entries as environment variables
     load_dotenv(find_dotenv())
 
-    make_dataset()
+    create_dataset_for_stock()
