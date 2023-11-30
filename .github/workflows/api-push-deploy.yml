@@ -1,0 +1,9 @@
+name: Deploy api
+on:
+  push:
+    paths:
+      - infra/helm/api/**
+
+jobs:
+  Deploy-Api:
+    uses: ./.github/workflows/api-deploy.yml
