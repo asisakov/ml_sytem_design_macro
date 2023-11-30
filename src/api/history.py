@@ -9,6 +9,10 @@ router = APIRouter()
 
 @router.get("/history/stocks")
 def stocks():
+    """
+    Get info about available stock names, timeframes, quantities and
+    periods
+    """
     res = client.raw_query('''
                            SELECT
                                stock_name,

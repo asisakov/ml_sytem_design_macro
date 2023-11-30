@@ -18,7 +18,14 @@ spec:
                 name: {{ include "api.fullname" . }}
                 port:
                   number: 80
-          - path: /docs/
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "api.fullname" . }}
+                port:
+                  number: 80
+          - path: /openapi.json
             pathType: Prefix
             backend:
               service:

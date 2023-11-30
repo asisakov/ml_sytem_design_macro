@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.get("/forecast/stocks")
 def stocks():
+    """ Get info about available forecasts and model names """
     res = client.raw_query('''
                            SELECT
                                stock_name,
