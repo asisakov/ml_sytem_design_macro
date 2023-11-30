@@ -7,3 +7,6 @@ on:
 jobs:
   Build-N-Push-Api:
     uses: ./.github/workflows/api-build.yml
+  Deploy-Api:
+    needs: ["Build-N-Push-Api"]
+    uses: ./.github/workflows/api-deploy.yml

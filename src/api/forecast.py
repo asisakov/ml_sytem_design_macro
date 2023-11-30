@@ -7,8 +7,8 @@ from datetime import datetime
 router = APIRouter()
 
 
-@router.get("/forecast/stocks")
-def stocks():
+@router.get("/forecast/meta")
+def meta():
     """ Get info about available forecasts and model names """
     res = client.raw_query('''
                            SELECT
