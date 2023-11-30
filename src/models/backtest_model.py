@@ -94,7 +94,7 @@ def launch_model_backtesting(
         metrics=[MAE(), MSE(), SMAPE(), MAPE()],
         n_folds=backtest_n_folds, )
 
-    # Prepare output dataframe
+    # Prepare output dataframe (take the last column)
     out_df = pd.DataFrame(index=forecast_df.index, data=forecast_df.iloc[:, -1].rename("prediction"))
 
     # Write the forecast to output file with possible compression (according to file extension)

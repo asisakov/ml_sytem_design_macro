@@ -32,7 +32,7 @@ def create_dataset_for_stock(
         clickhouse_user = os.getenv("CLICKHOUSE_USER")
         clickhouse_password = os.getenv("CLICKHOUSE_PASSWORD")
 
-        logger.info("Start loading data from ClickHouse")
+        logger.info("Create connection to ClickHouse")
         client = clickhouse_connect.get_client(
             host=clickhouse_host,
             port=clickhouse_port,
@@ -41,6 +41,7 @@ def create_dataset_for_stock(
             password=clickhouse_password
         )
 
+        logger.info("Start loading data from ClickHouse")
         df = client.query_df(
             f'''
             SELECT
@@ -60,7 +61,7 @@ def create_dataset_for_stock(
             raise Exception(f"Empty dataframe received for {stock_name=} and {timeframe=}.")
 
         df.set_index(column_for_timestamp, drop=True, inplace=True,)
-        # TBD: find the code for cheking datetime
+        # TBD: find the code for checking datetime
 
         # Write to output file with possible compression (according to file extension)
         out_file_abs_path = os.path.abspath(out_file_path)
