@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: {{ include "api.fullname" . }}
+  labels:
+    {{- include "api.labels" . | nindent 4 }}
+spec:
+  rules:
+    - host: {{ required "Нужно передать домен" .Values.global.PUBLIC_API_HOST }}
+      http:
+        paths:
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "api.fullname" . }}
+                port:
+                  number: 80
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "api.fullname" . }}
+                port:
+                  number: 80
+          - path: /openapi.json
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "api.fullname" . }}
+                port:
+                  number: 80

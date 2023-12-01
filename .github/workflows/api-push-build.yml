@@ -1,0 +1,12 @@
+name: Build api
+on:
+  push:
+    paths:
+      - src/api/**
+
+jobs:
+  Build-N-Push-Api:
+    uses: ./.github/workflows/api-build.yml
+  Deploy-Api:
+    needs: ["Build-N-Push-Api"]
+    uses: ./.github/workflows/api-deploy.yml

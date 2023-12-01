@@ -1,0 +1,7 @@
+name: "Manual: deploy api"
+on:
+  workflow_dispatch:
+
+jobs:
+  Deploy-Api:
+    uses: ./.github/workflows/api-deploy.yml
