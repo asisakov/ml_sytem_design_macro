@@ -57,7 +57,7 @@ def create_dataset_for_stock(
 
         assert isinstance(df, pd.DataFrame)
         logger.info(f"Got dataframe with shape: {df.shape}")
-        if len(df) == 0:
+        if df.empty:
             raise Exception(f"Empty dataframe received for {stock_name=} and {timeframe=}.")
 
         df.set_index(column_for_timestamp, drop=True, inplace=True,)
