@@ -14,7 +14,7 @@ def push_dataset(
     model_name: str
 ):
     """
-    Loads the required data from clickhouse, writes the obtained data to specified file.
+    Loads the required data from clickhouse, writes the obtained data to specified file. TBD: fix this
     """
     logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def push_dataset(
         # Rename columns with prediction to ClickHouse table fields
         df.rename({"timestamp": "forecast_date"}, axis="columns", inplace=True)
         df.rename({"prediction": "forecast_value"}, axis="columns", inplace=True)
-        # Insert addition metadata columns
+        # Insert additional metadata columns
         df['stock_name'] = stock_name
         df['interval'] = timeframe
         df['run_date'] = datetime.now(timezone.utc)
@@ -56,7 +56,7 @@ def push_dataset(
         logger.info(f"Pushing dataframe with shape: {df.shape} to CLickHouse")
         client.insert_df('forecast', df)
 
-        logger.info(f"Reading data back")
+        logger.info(f"Reading data back, just for checking")
         df2 = client.query_df(
             f'''
             SELECT
@@ -69,4 +69,4 @@ def push_dataset(
 
 
     except Exception as e:
-        logger.error(f"Exception in push_dataset; main params: {src_file_path=}. Details: %s", e)
+        logger.error(f"Exception in push_dataset. Details: %s", e)
