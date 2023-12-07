@@ -24,7 +24,7 @@ from etna.transforms import LogTransform, LagTransform
 def launch_model_backtesting(
     # src_model_file_path: str,
     src_model_name: str,        # Hard-coded (TBD) ETNA model name
-    src_data_file_path: str,
+    src_data_file_path: str,    # Path to data. If more than one stocks, then prediction is made for the first one(TBD)
     src_data_timeframe: str,    # Frequency of data record. Ex: "MS" for months, "H" for 1h
     column_for_timestamp: str,
     column_for_target: str,
@@ -44,7 +44,8 @@ def launch_model_backtesting(
     # logger.info(f"Reading trained model from file {src_model_abs_file_path}")
     # model = joblib.load(src_model_abs_file_path)  # TBD: file not found, file corrupted
 
-    # Create model by the specified name (TBD: discuss)
+    # Create model by the specified name (TBD: discuss. Alternative: pass alredy creted model instance as parameter,
+    # but what to do in case of CLI operation?)
     if src_model_name == "NaiveModel":
         model = NaiveModel(lag=1)
     elif src_model_name == "LinearPerSegmentModel":
@@ -64,7 +65,7 @@ def launch_model_backtesting(
     # Resample the data to fill missing candles, and forward-fill the gaps (including nans if any)
     df_src = df_src.resample(rule=src_data_timeframe).ffill()
     # Replace remaining nans to previous good values (rarely occurred)
-    df_src = df_src.ffill()
+    df_src = df_src.ffill()  # TBD: could be critical for some features with large missing data in the end
 
     # Prepare columns "timestamp", "segment", "target" that are required by ETNA
     df_src["timestamp"] = df_src.index      # For now - just create copy of index. TBD: try to rename the index
