@@ -10,7 +10,7 @@ def _select_and_rename_df_columns(
     columns_to_process: tuple[str],
     column_for_stock_name: str
 ):
-    assert len(df) > 0
+    assert not df.empty
     stock_name = df[column_for_stock_name].iloc[0]
     df = df[list(columns_to_process)]  # Have to convert column names from tuple to list
     rename_dict = {x: f"{x}_{stock_name}" for x in columns_to_process}
@@ -61,7 +61,7 @@ def merge_datasets_from_files(
             df_tmp = pd.read_csv(src_data_abs_file_path, index_col=column_for_timestamp,
                                  parse_dates=[column_for_timestamp])
             logger.info(f".. loaded data shape: {df_tmp.shape}")
-            if len(df_tmp) == 0:
+            if df_tmp.empty:
                 raise ValueError(f"The specified data file seems to be empty: {src_data_abs_file_path}")
 
             # Leave only required columns and rename them.
@@ -94,7 +94,7 @@ def merge_datasets_from_files(
         # Join all dataframes (trailing missed data could be replaced with NAs)
         df_res = pd.concat(df_list, axis="columns", verify_integrity=True)
         logger.info(f"Shape of combined dataframe: {df_res.shape}")
-        if len(df_res) == 0:
+        if df_res.empty:
             raise Exception(f"The combined dataframe is empty!")
 
         # Write to output file with possible compression (according to file extension)
