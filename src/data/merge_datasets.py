@@ -33,7 +33,7 @@ def merge_datasets_from_files(
     column_for_stock_name: str = "stock_name"
 ):
     """
-    Merges specified files into single dataframe.
+    Merges specified files into single dataframe with filling missed values. Single file is also supported.
     :param src_file_list: File names to process. The first file in the list is considered as "target" stock
     :param src_data_timeframe:
     :param out_file_path:
@@ -47,10 +47,10 @@ def merge_datasets_from_files(
     try:
 
         # Check input params
-        if len(src_file_list) < 2:
-            raise ValueError(f"Unexpected number of source files (should be >= 2): {len(src_file_list)}")
+        if len(src_file_list) == 0:
+            raise ValueError(f"List of source files is empty!")
 
-        logger.info("Reading data from the files")
+        logger.info("Reading data from the file(s)")
         df_list: list[pd.DataFrame] = []
         common_start_datatime = None
         for f in src_file_list:
@@ -83,19 +83,34 @@ def merge_datasets_from_files(
 
             df_list.append(df_tmp)
 
-        assert len(df_list) > 1
+        assert len(df_list) >= 1
 
         # Process start of all dataframes
         for i in range(len(df_list)):
             df = df_list[i]
             df_list[i] = df[df.index >= common_start_datatime]
-            logger.info(f"Start point of dataframe [{i}] was cut. Shape: {df.shape} -> {df_list[i].shape}")
+            logger.info(f"Start point of dataframe [{i}] was cut to {common_start_datatime=}. "
+                        f"Shape: {df.shape} -> {df_list[i].shape}")
 
-        # Join all dataframes (trailing missed data could be replaced with NAs)
+        # Process end of all dataframes
+        target_end_datetime = df_list[0].index.max()
+        # Cut ends of all non-target data exceeding the target_end_datetime
+        for i in range(1, len(df_list)):
+            df = df_list[i]
+            df_list[i] = df[df.index <= target_end_datetime]
+            logger.info(f"End point of dataframe [{i}] was cut to {target_end_datetime=}. "
+                        f"Shape: {df.shape} -> {df_list[i].shape}")
+
+
+        # Join all dataframes (trailing missed data for non-targets could be replaced with NAs)
         df_res = pd.concat(df_list, axis="columns", verify_integrity=True)
         logger.info(f"Shape of combined dataframe: {df_res.shape}")
         if df_res.empty:
             raise Exception(f"The combined dataframe is empty!")
+
+        # Do forward-fill for the whole combined dataset
+        # TBD: report the number of filled NAs
+        df_res = df_res.ffill()
 
         # Write to output file with possible compression (according to file extension)
         out_file_abs_path = os.path.abspath(out_file_path)
