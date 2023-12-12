@@ -52,12 +52,18 @@ def push_dataset(
 
         # Ensure that the pushed dataframe does not contain extra columns
         assert len(df.columns) == 6
+        # TBD: change this approach to dataclass
+        # TBD: load column names from config (question: how to map column and values in config?)
+        # Example:
+        # my_columns = config.output_table_columns
+        # assert len(my_columns) == len(df.columns)
+        # assert set(my_columns) == set(df.columns)
 
         logger.info(f"Pushing dataframe with shape: {df.shape} to CLickHouse")
         client.insert_df('forecast', df)
 
         logger.info(f"Reading data back, just for checking")
-        df2 = client.query_df(
+        df2: pd.DataFrame = client.query_df(
             f'''
             SELECT
                 *
@@ -66,6 +72,17 @@ def push_dataset(
            '''
         )
         logger.info(f"Shape of read data: {df2.shape}")
+        # In debug mode - show head and tail of the current ClickHouse table
+        if logger.isEnabledFor(logging.DEBUG):
+            df2.sort_values(by=["run_date", "forecast_date"], inplace=True)
+            # Tell pandas to show all columns without width limitations
+            opt_name = "display.max_columns"
+            val_before = pd.get_option(opt_name)
+            pd.set_option(opt_name, None)
+            logger.debug(f"Head of read data:\n{df2.head()}")
+            logger.debug(f"Tail of read data:\n{df2.tail()}")
+            # Restore the setting
+            pd.set_option(opt_name, val_before)
 
 
     except Exception as e:

@@ -41,7 +41,7 @@ def create_dataset_for_stock(
             password=clickhouse_password
         )
 
-        logger.info("Start loading data from ClickHouse")
+        logger.info(f"Start loading data from ClickHouse for {stock_name=} and {timeframe=}")
         df = client.query_df(
             f'''
             SELECT
