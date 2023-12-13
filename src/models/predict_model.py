@@ -70,7 +70,8 @@ def predict_model(
     metrics_df, forecast_df, fold_info_df = pipeline.backtest(
         ts=ts_dataset,
         metrics=[MAE(), MSE(), SMAPE(), MAPE()],
-        n_folds=backtest_n_folds, )
+        n_folds=backtest_n_folds
+    )
 
     # Write the forecast to output file with possible compression (according to file extension)
     out_predictions_ans_file_path = os.path.abspath(out_predictions_file_path)

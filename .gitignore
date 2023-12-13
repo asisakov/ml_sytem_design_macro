@@ -1,5 +1,6 @@
 .idea
 .ipynb_checkpoints
+*.pyc
 catboost_info
 
 # DotEnv configuration
