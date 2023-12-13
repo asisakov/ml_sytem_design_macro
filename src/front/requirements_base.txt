@@ -6,3 +6,5 @@ numpy==1.26.2
 pandas-ta==0.3.14b0
 matplotlib==3.8.2
 statsmodels==0.14.0
+clickhouse-connect==0.6.20
+python-dotenv==1.0.0

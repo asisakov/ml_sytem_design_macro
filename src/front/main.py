@@ -5,6 +5,22 @@ import plotly.graph_objects as go
 import pandas_ta as ta
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+from dotenv import load_dotenv
+
+load_dotenv()
+from clickhouse import client
+
+data = client.query_df('''
+                        SELECT
+                            *
+                        FROM
+                            stock
+                        WHERE
+                            stock_name='ALI=F'
+                            AND
+                            interval='1h'
+                       ''')
+print(data)
 
 st.title('График акции')
 
