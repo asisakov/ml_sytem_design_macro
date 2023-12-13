@@ -1,0 +1,17 @@
+name: deploy front
+
+on:
+  workflow_call:
+
+jobs:
+  Deploy-Front:
+    runs-on: compredict-runners
+    container:
+      image: dtzar/helm-kubectl:3.13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy front
+        run: cd infra/helm && helm upgrade -n compredict front front
+      - name: Rollout
+        run: cd infra/helm && kubectl -n compredict rollout restart deploy front

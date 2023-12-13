@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "front.fullname" . }}
+  labels:
+    {{- include "front.labels" . | nindent 4 }}
+    contentHash: {{ .Values.contentHash }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "front.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "front.selectorLabels" . | nindent 8 }}
+        contentHash: {{ .Values.contentHash }}
+        log_format: unordered
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: r.compredict.xyz/front:latest
+          args:
+            - --server.address
+            - 0.0.0.0
+            - --server.port
+            - "8080"
+            #- --server.baseUrlPath
+            #- /front/
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+              name: front-port
+          env:
+            - name: CLICKHOUSE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: compredict-config
+                  key: CLICKHOUSE_PORT
+            - name: CLICKHOUSE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: compredict-config
+                  key: CLICKHOUSE_HOST
+            - name: CLICKHOUSE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: compredict-config
+                  key: CLICKHOUSE_USER_RO
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: compredict-secrets
+                  key: CLICKHOUSE_USER_RO_PASSWORD
+      imagePullSecrets:
+        - name: registry-compredict
