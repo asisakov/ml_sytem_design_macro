@@ -1,0 +1,7 @@
+name: "Manual: build front"
+on:
+  workflow_dispatch:
+
+jobs:
+  Build-N-Push-Front:
+    uses: ./.github/workflows/front-build.yml
