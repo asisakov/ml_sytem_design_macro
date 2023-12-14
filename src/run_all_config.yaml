@@ -1,0 +1,27 @@
+# List of stocks. Prediction will be made for the first stock in the list
+STOCKS:
+  - "ALI=F"
+  - "BTC=F"
+
+TIMEFRAME: "1h"
+
+# Column in ClickHouse for storing datetime information
+COL_FOR_TIMESTAMP: "ts"
+
+PREDICTIONS_FILE_NAME: "../data/predicted/predictions.csv.gz"
+
+MERGED_DATA_FILE_NAME: "../data/interim/stockdata_merged.csv.gz"
+
+MODEL_NAME: "ProphetModel" 
+# TBD: support multiple models. 
+# MODEL_NAMES = config.get("MODEL_NAMES", ["NaiveModel", "LinearPerSegmentModel", "CatBoostPerSegmentModel"])
+
+# Set mode of ETNA pipeline operation - backtest (True) vs forecast (False)
+USE_BACKTEST_MODE: true
+
+# Settings for backtest mode
+BACKTEST_HORIZON: 1   # How many candled to predict on each backtest step
+BACKTEST_N_FOLDS: 24  # Number of test folds for backtest
+
+# Settings for forecast mode
+FORECAST_HORIZON: 24  # How many candled to predict

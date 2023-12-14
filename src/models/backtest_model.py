@@ -92,6 +92,7 @@ def launch_model_backtesting(
     # TBD: optimize memory (do not copy the columns)
     # Convert pandas dataframe to ETNA Dataset format.
     df_ts_format = TSDataset.to_dataset(df_src)
+    # TBD: map "1h" to ETNA "H"
     tsd_dataset = TSDataset(df_ts_format, freq=src_data_timeframe)
 
     # A list of transforms
@@ -119,6 +120,9 @@ def launch_model_backtesting(
 
     # Prepare output dataframe (take the last column)
     out_df = pd.DataFrame(index=df_forecast.index, data=df_forecast.iloc[:, -1].rename("prediction"))
+    # TBD: in backtest mode we can take N last candles from tsd_dataset and put them to "ground_truth" column
+    # If required, we could get N + history_len candles. See charts in
+    # https://etna-docs.netlify.app/tutorials/backtest#4.-Validation-visualisation
 
     # Write the forecast to output file with possible compression (according to file extension)
     out_predictions_ans_file_path = os.path.abspath(out_predictions_file_path)

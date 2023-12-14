@@ -11,10 +11,12 @@ def push_dataset(
     src_file_path: str,
     stock_name: str,
     timeframe: str,
-    model_name: str
+    model_name: str,
+    col_for_timestamp: str = "timestamp",
+    col_for_prediction: str = "prediction"
 ):
     """
-    Loads the required data from clickhouse, writes the obtained data to specified file. TBD: fix this
+    Loads pandas dataframe with predictions from the specified file, and uploads it to clickhouse.
     """
     logger = logging.getLogger(__name__)
 
@@ -37,13 +39,15 @@ def push_dataset(
         )
 
         logger.info(f"Reading predictions from the specified file ..")
-        df = pd.read_csv(src_file_path, parse_dates=["timestamp"])  # TBD:, parse_dates=[])
+        df = pd.read_csv(src_file_path, parse_dates=[col_for_timestamp])
         logger.info(f".. loaded df shape: {df.shape}")
 
         logger.info(f"Preparing columns")
         # Rename columns with prediction to ClickHouse table fields
-        df.rename({"timestamp": "forecast_date"}, axis="columns", inplace=True)
-        df.rename({"prediction": "forecast_value"}, axis="columns", inplace=True)
+        assert col_for_timestamp in df.columns
+        assert col_for_prediction in df.columns
+        df.rename({col_for_timestamp: "forecast_date"}, axis="columns", inplace=True)
+        df.rename({col_for_prediction: "forecast_value"}, axis="columns", inplace=True)
         # Insert additional metadata columns
         df['stock_name'] = stock_name
         df['interval'] = timeframe
