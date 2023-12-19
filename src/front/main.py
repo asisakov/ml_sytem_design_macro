@@ -26,7 +26,7 @@ with Algo_strategy:
                                            database='compredict')
 
     stocks = ('ALI=F', 'BTC=F', 'GC=F')
-    selected_stock = st.selectbox("Выбор акции", stocks)
+    selected_stock = st.selectbox("Выбор commodity", stocks)
     #ticker = st.sidebar.text_input('Выбор акции')
     start_date = st.sidebar.date_input('Начальная дата', value = pd.to_datetime('2022-05-02'))
     end_date = st.sidebar.date_input('Конечная дата', value = pd.to_datetime('today'))
