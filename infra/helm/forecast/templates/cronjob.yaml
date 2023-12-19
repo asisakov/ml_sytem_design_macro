@@ -1,0 +1,42 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "forecast.name" . }}
+spec:
+  schedule: "27 21 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+            - name: registry-compredict
+          containers:
+          - name: {{ include "forecast.name" . }}
+            image: r.compredict.xyz/forecast:latest
+            imagePullPolicy: Always
+            args:
+              - run_all.py
+            env:
+              - name: CLICKHOUSE_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_PORT
+              - name: CLICKHOUSE_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_HOST
+              - name: CLICKHOUSE_USER
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_USER_RW
+              - name: CLICKHOUSE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: compredict-secrets
+                    key: CLICKHOUSE_USER_RW_PASSWORD
+          restartPolicy: Never
