@@ -5,3 +5,8 @@ catboost_info
 
 # DotEnv configuration
 .env
+# python virtual envs
+v
+venv
+data/interim/
+data/predicted/

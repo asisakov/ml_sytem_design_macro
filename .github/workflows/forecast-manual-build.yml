@@ -1,0 +1,7 @@
+name: "Manual: build forecast"
+on:
+  workflow_dispatch:
+
+jobs:
+  Build-N-Push-Forecast:
+    uses: ./.github/workflows/forecast-build.yml

@@ -1,0 +1,17 @@
+name: build and push forecast
+
+on:
+  workflow_call:
+
+jobs:
+  build-n-push-forecast:
+    runs-on: compredict-runners
+    container:
+      image: quay.io/buildah/stable:v1.32.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and push
+        run: cd src && buildah bud --authfile /etc/runners-secrets/kaniko.json -f Dockerfile -t r.compredict.xyz/forecast:latest .
+      - name: push
+        run: buildah push --authfile /etc/runners-secrets/kaniko.json r.compredict.xyz/forecast:latest
