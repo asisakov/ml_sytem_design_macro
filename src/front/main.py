@@ -7,26 +7,25 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from dotenv import load_dotenv
 
+import clickhouse_connect
+from FrontArgs import FrontArgs
+
 load_dotenv()
-from clickhouse import client
 
-data = client.query_df('''
-                        SELECT
-                            *
-                        FROM
-                            stock
-                        WHERE
-                            stock_name='ALI=F'
-                            AND
-                            interval='1h'
-                       ''')
-print(data)
-
-st.title('График акции')
+st.title('График commodity')
 
 Algo_strategy,tech_indicator  = st.tabs([ "Стратегия с бэктестом",  "Идеи для инвестора"])
 with Algo_strategy:
-    stocks = ('SBER', 'GAZP')
+
+    # Клиент создаётся внутри with для избежания ошибок concurrency
+    Args = FrontArgs()
+    client = clickhouse_connect.get_client(host=Args.clickhouse_host,
+                                           port=int(Args.clickhouse_port),
+                                           username=Args.clickhouse_user,
+                                           password=Args.clickhouse_password,
+                                           database='compredict')
+
+    stocks = ('ALI=F', 'BTC=F', 'GC=F')
     selected_stock = st.selectbox("Выбор акции", stocks)
     #ticker = st.sidebar.text_input('Выбор акции')
     start_date = st.sidebar.date_input('Начальная дата', value = pd.to_datetime('2022-05-02'))
@@ -34,14 +33,27 @@ with Algo_strategy:
     fast_ma = st.sidebar.number_input('Введите значение быстрой МА',value = 20)
     slow_ma = st.sidebar.number_input('Введите значение медленной МА',value = 40)
     ls_ma = st.sidebar.number_input('Введите значение регрессионной МА',value = 20)
-    sber = Ticker('SBER')
-    gazp = Ticker('GAZP')
-    if selected_stock == 'SBER':
-        s=sber
-    else:
-        s=gazp
-    df= s.candles(date=start_date,till_date = end_date, period='D')#sber.candles(date='2020-01-01',till_date = '2023-12-05', period='D')
-    df= pd.DataFrame(df)
+    #df= s.candles(date=start_date,till_date = end_date, period='D')
+    df = client.query_df('''SELECT
+        open,
+        close,
+        high,
+        low,
+        volume,
+        ts AS begin
+    FROM stock
+    WHERE
+        interval = '1d'
+        AND
+        stock_name = {stock_name:String}
+        AND
+        ts BETWEEN {start_date:DateTime} AND {end_date:DateTime}
+    ORDER BY ts ASC
+    ''', {'stock_name': selected_stock, 'start_date': start_date, 'end_date': end_date})
+    #print(df)
+    #df= s.candles(date=start_date,till_date = end_date, period='D')#sber.candles(date='2020-01-01',till_date = '2023-12-05', period='D')
+    #df = global_df
+    #df= pd.DataFrame(df)
     #df1= df['close']
     #st.dataframe(df)
     #st.line_chart(df)
