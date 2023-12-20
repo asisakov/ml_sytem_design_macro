@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: {{ include "forecast.name" . }}
 spec:
-  schedule: "30 20 * * *"
+  schedule: "13 3 * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -34,6 +34,11 @@ spec:
                   configMapKeyRef:
                     name: compredict-config
                     key: CLICKHOUSE_USER_RW
+              - name: CLICKHOUSE_DB
+                valueFrom:
+                  configMapKeyRef:
+                    name: compredict-config
+                    key: CLICKHOUSE_DB
               - name: CLICKHOUSE_PASSWORD
                 valueFrom:
                   secretKeyRef:
