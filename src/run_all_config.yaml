@@ -17,7 +17,7 @@ MODEL_NAME: "ProphetModel"
 # MODEL_NAMES = config.get("MODEL_NAMES", ["NaiveModel", "LinearPerSegmentModel", "CatBoostPerSegmentModel"])
 
 # Set mode of ETNA pipeline operation - backtest (True) vs forecast (False)
-USE_BACKTEST_MODE: true
+USE_BACKTEST_MODE: false
 
 # Settings for backtest mode
 BACKTEST_HORIZON: 1   # How many candled to predict on each backtest step
