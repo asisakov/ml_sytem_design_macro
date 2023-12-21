@@ -1,0 +1,7 @@
+name: "Manual: deploy front"
+on:
+  workflow_dispatch:
+
+jobs:
+  Deploy-Front:
+    uses: ./.github/workflows/front-deploy.yml

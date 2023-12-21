@@ -1,0 +1,9 @@
+name: Deploy front
+on:
+  push:
+    paths:
+      - infra/helm/front/**
+
+jobs:
+  Deploy-Front:
+    uses: ./.github/workflows/front-deploy.yml

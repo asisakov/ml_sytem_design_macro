@@ -1,0 +1,7 @@
+name: "Manual: build api"
+on:
+  workflow_dispatch:
+
+jobs:
+  Build-N-Push-Api:
+    uses: ./.github/workflows/api-build.yml

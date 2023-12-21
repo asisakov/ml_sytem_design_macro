@@ -1,0 +1,12 @@
+name: Build front
+on:
+  push:
+    paths:
+      - src/front/**
+
+jobs:
+  Build-N-Push-Front:
+    uses: ./.github/workflows/front-build.yml
+  Deploy-Front:
+    needs: ["Build-N-Push-Front"]
+    uses: ./.github/workflows/front-deploy.yml

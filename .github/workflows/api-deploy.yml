@@ -1,0 +1,17 @@
+name: deploy api
+
+on:
+  workflow_call:
+
+jobs:
+  Deploy-Api:
+    runs-on: compredict-runners
+    container:
+      image: dtzar/helm-kubectl:3.13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy api
+        run: cd infra/helm && helm upgrade -n compredict api api
+      - name: Rollout
+        run: cd infra/helm && kubectl -n compredict rollout restart deploy api
