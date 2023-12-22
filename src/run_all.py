@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import yaml
 
@@ -34,9 +35,15 @@ USE_BACKTEST_MODE = config["USE_BACKTEST_MODE"]
 # Settings for backtest mode
 BACKTEST_HORIZON = config["BACKTEST_HORIZON"]
 BACKTEST_N_FOLDS = config["BACKTEST_N_FOLDS"]
+BACKTEST_REFIT = config["BACKTEST_REFIT"]
 
 # Settings for forecast mode
 FORECAST_HORIZON = config["FORECAST_HORIZON"]
+
+TRAIN_TEST_SET_START_DATETIME_INCLUSIVE = datetime.strptime(
+    config["TRAIN_TEST_SET_START_DATETIME_INCLUSIVE"], '%Y-%m-%d')
+TRAIN_TEST_SET_END_DATETIME_INCLUSIVE = datetime.strptime(
+    config["TRAIN_TEST_SET_END_DATETIME_INCLUSIVE"], '%Y-%m-%d')
 
 
 def main():
@@ -81,8 +88,11 @@ def main():
         column_for_target=f"adj_close_{STOCKS[0]}",
         forecast_horizon=horizon,
         backtest_n_folds=n_folds,
+        backtest_refit=BACKTEST_REFIT,
         out_predictions_file_path=PREDICTIONS_FILE_NAME,
-        use_backtest_mode=USE_BACKTEST_MODE
+        use_backtest_mode=USE_BACKTEST_MODE,
+        train_test_set_start_dt_inclusive=TRAIN_TEST_SET_START_DATETIME_INCLUSIVE,
+        train_test_set_end_dt_inclusive=TRAIN_TEST_SET_END_DATETIME_INCLUSIVE
     )
 
     # Push the result to ClickHouse
