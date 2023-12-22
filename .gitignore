@@ -5,3 +5,5 @@ catboost_info
 
 # DotEnv configuration
 .env
+
+models/ant/_SAVED

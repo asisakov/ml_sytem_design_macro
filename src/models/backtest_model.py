@@ -1,4 +1,5 @@
 import click
+from datetime import datetime
 from etna.datasets.tsdataset import TSDataset
 from etna.metrics import MAE, MSE, SMAPE, MAPE
 from etna.models import CatBoostPerSegmentModel, LinearPerSegmentModel, NaiveModel, ProphetModel
@@ -32,8 +33,12 @@ def launch_model_backtesting(
     column_for_target: str,
     forecast_horizon: int,      # Set the horizon for predictions
     backtest_n_folds: int,      # Is ignored in forecast mode. May be set to -1
+    backtest_refit: int,        # Pipeline is re-trained every ``value`` folds starting from the
+                                # first. 0 means "retrain only on the first fold."
     out_predictions_file_path: str,
-    use_backtest_mode: bool = False  # Either forcast (False) or backtest (True) pipeline modes.
+    use_backtest_mode: bool = False,  # Either forcast (False) or backtest (True) pipeline modes.
+    train_test_set_start_dt_inclusive: datetime = None,  # If None, do not limit left bound
+    train_test_set_end_dt_inclusive: datetime = None     # If None, do not limit right bound
 ):
     """
     Loads trained model, loads data, do predictions for the data, and exports them to the specified file.
@@ -43,6 +48,7 @@ def launch_model_backtesting(
     # Input checks
     if use_backtest_mode and backtest_n_folds != -1:
         logger.warning(f"The `backtest_n_folds` parameter with non-default value {backtest_n_folds} is ignored!")
+
 
     # TBD: check exceptions
 
@@ -81,6 +87,12 @@ def launch_model_backtesting(
     # Replace remaining nans to previous good values (rarely occurred)
     df_src = df_src.ffill()  # TBD: could be critical for some features with large missing data in the end
 
+    # Select required dates period
+    if train_test_set_start_dt_inclusive is not None:
+        df_src = df_src[df_src.index >= train_test_set_start_dt_inclusive]
+    if train_test_set_end_dt_inclusive is not None:
+        df_src = df_src[df_src.index <= train_test_set_end_dt_inclusive]
+
     # Prepare columns "timestamp", "segment", "target" that are required by ETNA
     df_src["timestamp"] = df_src.index      # For now - just create copy of index. TBD: try to rename the index
     df_src["segment"] = "dummy_segment"     # Segments are required by ETNA
@@ -112,7 +124,18 @@ def launch_model_backtesting(
         df_metrics, df_forecast, df_fold_info = pipeline.backtest(
             ts=tsd_dataset,
             metrics=[MAE(), MSE(), SMAPE(), MAPE()],
-            n_folds=backtest_n_folds, )
+            n_folds=backtest_n_folds,
+            refit=False if backtest_refit == 0 else backtest_refit  # Convert from int to int or False
+        )
+        # Dump mean metrics to log
+        logger.info(f"Mean metrics across all backtest folds: \n{df_metrics.mean(axis='rows')}")
+        # Count number of candles with MAPE > 5%
+        assert forecast_horizon == 1  # If not 1, the number of candles is different from the number of folds
+        total_candles = len(df_metrics)
+        bad_candles = len(df_metrics.MAPE > 5.0)
+        logger.info(f"Number of candles with MAPE > 5%: {bad_candles} / {total_candles} "
+                    f"({bad_candles / total_candles}:.1%)")
+
     else:
         pipeline.fit(tsd_dataset)
         tsd_forecast = pipeline.forecast()  # Use train dataset as source of timestamps for new forecast dates
@@ -136,4 +159,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format=log_fmt)
 
     # Main function call
-    launch_model_backtesting()
+    # launch_model_backtesting()
+
