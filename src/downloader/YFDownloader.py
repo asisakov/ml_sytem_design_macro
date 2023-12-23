@@ -8,12 +8,12 @@ from datetime import datetime, timezone, timedelta
 class YFDownloader:
     DRY_MODE = False
 
-    MAX_PERIOD_1H_DAYS = 730
+    MAX_PERIOD_1H_DAYS = 720
     MAX_PERIOD_1D_DAYS = 365*10
 
     STOCK_TABLE = 'stock'
 
-    MIN_UPDATE_INTERVAL_FOR_1H_SECS = 3600*32
+    MIN_UPDATE_INTERVAL_FOR_1H_SECS = 3600*8
 
     def __init__(self, logging, clickhouse_client, dry=False):
         self.logging = logging
