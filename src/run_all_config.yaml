@@ -3,7 +3,8 @@ STOCKS:
   - "ALI=F"
   - "BTC=F"
 
-TIMEFRAME: "1h"
+#TIMEFRAME: "1h"
+TIMEFRAME: "1d"  # TBD 12-21
 
 # Column in ClickHouse for storing datetime information
 COL_FOR_TIMESTAMP: "ts"
@@ -17,11 +18,17 @@ MODEL_NAME: "ProphetModel"
 # MODEL_NAMES = config.get("MODEL_NAMES", ["NaiveModel", "LinearPerSegmentModel", "CatBoostPerSegmentModel"])
 
 # Set mode of ETNA pipeline operation - backtest (True) vs forecast (False)
-USE_BACKTEST_MODE: true
+USE_BACKTEST_MODE: false
 
 # Settings for backtest mode
-BACKTEST_HORIZON: 1   # How many candled to predict on each backtest step
-BACKTEST_N_FOLDS: 24  # Number of test folds for backtest
+BACKTEST_HORIZON: 1   # How many candles to predict on each backtest step
+# BACKTEST_N_FOLDS: 24  # Number of test folds for backtest
+BACKTEST_N_FOLDS: 183   # Test set: from 2023-05-01 to 2023-10-30 (all inclusive)
+BACKTEST_REFIT: 10      # Pipeline is re-trained every ``value`` folds starting from the
+                        # first. 0 means "retrain only on the first fold."
 
 # Settings for forecast mode
-FORECAST_HORIZON: 24  # How many candled to predict
+FORECAST_HORIZON: 24  # How many candles to predict
+
+TRAIN_TEST_SET_START_DATETIME_INCLUSIVE: "2022-05-01"  # 8 months of 2022
+TRAIN_TEST_SET_END_DATETIME_INCLUSIVE: "2023-10-30"  # 10 months of 2023

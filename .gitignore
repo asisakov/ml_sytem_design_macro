@@ -8,5 +8,7 @@ catboost_info
 # python virtual envs
 v
 venv
+# tmp files
 data/interim/
 data/predicted/
+models/ant/_SAVED
