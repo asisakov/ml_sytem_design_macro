@@ -1,0 +1,7 @@
+name: "Manual: deploy forecast"
+on:
+  workflow_dispatch:
+
+jobs:
+  Deploy-Forecast:
+    uses: ./.github/workflows/forecast-deploy.yml

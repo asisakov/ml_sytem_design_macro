@@ -1,0 +1,9 @@
+name: Deploy forecast
+on:
+  push:
+    paths:
+      - infra/helm/forecast/**
+
+jobs:
+  Deploy-Forecast:
+    uses: ./.github/workflows/forecast-deploy.yml

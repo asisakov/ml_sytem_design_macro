@@ -1,0 +1,15 @@
+name: deploy forecast
+
+on:
+  workflow_call:
+
+jobs:
+  Deploy-Forecast:
+    runs-on: compredict-runners
+    container:
+      image: dtzar/helm-kubectl:3.13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy forecast
+        run: cd infra/helm && helm upgrade -n compredict forecast forecast
