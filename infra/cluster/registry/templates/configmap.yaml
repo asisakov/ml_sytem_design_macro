@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry
+data:
+  registry.passwd: |-
+    {{- tpl (.Files.Get "files/registry.passwd") . | nindent 4 }}
+

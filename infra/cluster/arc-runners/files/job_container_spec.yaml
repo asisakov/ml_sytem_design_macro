@@ -1,0 +1,15 @@
+spec:
+  serviceAccountName: compredict-deploy
+  containers:
+    - name: "$job"
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: runners-secrets
+          mountPath: /etc/runners-secrets
+  volumes:
+        - name: runners-secrets
+          secret:
+            secretName: {{ include "runners.fullname" . }}-secrets
+  imagePullSecrets:
+    - name: {{ include "runners.fullname" . }}-registry-compredict

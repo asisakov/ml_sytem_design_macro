@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: runners-config
+data:
+  job_container_spec.yaml: |
+    {{ tpl (.Files.Get "files/job_container_spec.yaml") . | nindent 4 }}

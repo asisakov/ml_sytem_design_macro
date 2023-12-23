@@ -1,0 +1,3 @@
+gha-runner-scale-set:
+  githubConfigUrl: "https://github.com/asisakov/ml_sytem_design_macro"
+  githubConfigSecret: github-token-fine
