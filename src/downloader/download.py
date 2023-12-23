@@ -9,7 +9,7 @@ from DownloaderArgs import DownloaderArgs
 logging.basicConfig(level='INFO',
                     format='%(asctime)s\t%(levelname)s\t%(message)s')
 
-AVAIL_TICKERS = ['ALI=F', 'GC=F', 'BTC=F']
+AVAIL_TICKERS = ['ALI=F', 'GC=F', 'BTC=F', 'CL=F', 'PL=F']
 AVAIL_INTERVALS = ['1h', '1d']
 
 Args = DownloaderArgs(logging, AVAIL_TICKERS, AVAIL_INTERVALS)
