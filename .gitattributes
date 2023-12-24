@@ -1,0 +1,7 @@
+infra/cluster/arc-runners/files/kaniko.json filter=git-crypt diff=git-crypt
+infra/cluster/secrets.yaml filter=git-crypt diff=git-crypt
+infra/cluster/cluster/charts/compredict/files/kaniko.json filter=git-crypt diff=git-crypt
+infra/cluster/registry/files/registry.passwd filter=git-crypt diff=git-crypt
+infra/cluster/registry/files/registry.plain filter=git-crypt diff=git-crypt
+infra/cluster/cluster/charts/compredict/templates/secrets.yaml filter=git-crypt diff=git-crypt
+infra/cluster/cluster/charts/compredict/templates/configmap.yaml filter=git-crypt diff=git-crypt

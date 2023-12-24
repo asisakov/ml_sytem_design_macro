@@ -1,0 +1,66 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: maintainer
+rules:
+- apiGroups:
+  - ""
+  - apps
+  - batch
+  resources:
+  - pods
+  - pods/log
+  - pods/portforward
+  - pods/status
+  - pods/exec
+  - services
+  - deployments
+  - secrets
+  - configmaps
+  - persistentvolumeclaims
+  - cronjobs
+  verbs:
+  - get
+  - watch
+  - list
+  - patch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - watch
+  - list
+  - patch
+  - create
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - watch
+  - list
+  - patch
+  - create
+- apiGroups:
+  - ""
+  - apps
+  - batch
+  resources:
+  - events
+  - jobs
+  - replicasets
+  - replicationcontrollers
+  - daemonsets
+  - statefulsets
+  - endpoints
+  verbs:
+  - get
+  - watch
+  - list
