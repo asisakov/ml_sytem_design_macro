@@ -28,7 +28,7 @@ BACKTEST_REFIT: 10      # Pipeline is re-trained every ``value`` folds starting 
                         # first. 0 means "retrain only on the first fold."
 
 # Settings for forecast mode
-FORECAST_HORIZON: 24  # How many candles to predict
+FORECAST_HORIZON: 14  # How many candles to predict
 
 TRAIN_TEST_SET_START_DATETIME_INCLUSIVE: "2022-05-01"  # 8 months of 2022
 TRAIN_TEST_SET_END_DATETIME_INCLUSIVE: "2023-10-30"  # 10 months of 2023
