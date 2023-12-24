@@ -14,7 +14,7 @@ load_dotenv()
 
 st.title('График commodity')
 
-Algo_strategy,tech_indicator  = st.tabs([ "Стратегия с бэктестом",  "Идеи для инвестора"])
+Algo_strategy, tech_indicator = st.tabs([ "Стратегия с бэктестом",  "Идеи для инвестора"])
 with Algo_strategy:
 
     # Клиент создаётся внутри with для избежания ошибок concurrency
@@ -33,7 +33,23 @@ with Algo_strategy:
     fast_ma = st.sidebar.number_input('Введите значение быстрой МА',value = 20)
     slow_ma = st.sidebar.number_input('Введите значение медленной МА',value = 40)
     ls_ma = st.sidebar.number_input('Введите значение регрессионной МА',value = 20)
-    #df= s.candles(date=start_date,till_date = end_date, period='D')
+    unique_models = st.sidebar.selectbox("Выберите модель прогноза",
+        ("ProphetModel"))
+    unique_run_dates = client.query_df('''SELECT
+        distinct run_date
+    FROM forecast
+    WHERE
+        interval = '1d'
+        AND
+        stock_name = {stock_name:String}
+    ''', {'stock_name': selected_stock})
+
+    run_date = st.sidebar.selectbox("Выберите дату прогноза",
+        tuple(unique_run_dates.values))
+
+    run_date = run_date[0]
+
+
     df = client.query_df('''SELECT
         open,
         close,
@@ -50,6 +66,19 @@ with Algo_strategy:
         ts BETWEEN {start_date:DateTime} AND {end_date:DateTime}
     ORDER BY ts ASC
     ''', {'stock_name': selected_stock, 'start_date': start_date, 'end_date': end_date})
+
+    predictions = client.query_df('''SELECT
+        forecast_date,
+        forecast_value
+    FROM forecast
+    WHERE
+        interval = '1d'
+        AND
+        stock_name = {stock_name:String}
+        AND
+        run_date = {run_date:DateTime('UTC')}
+    ORDER BY forecast_date ASC
+    ''', {'stock_name': selected_stock, 'run_date': run_date})
     #print(df)
     #df= s.candles(date=start_date,till_date = end_date, period='D')#sber.candles(date='2020-01-01',till_date = '2023-12-05', period='D')
     #df = global_df
@@ -58,7 +87,7 @@ with Algo_strategy:
     #st.dataframe(df)
     #st.line_chart(df)
     df = df.set_index('begin')
-    df['fast_ma'] = df['close'].rolling(window=fast_ma).mean() 
+    df['fast_ma'] = df['close'].rolling(window=fast_ma).mean()
     df['slow_ma'] = df['close'].rolling(window=slow_ma).mean()
     #LSMA
     period = ls_ma
@@ -120,12 +149,14 @@ with Algo_strategy:
     df = df.drop(df.index[0:slow_ma-1])
     fig = go.Figure(data=[go.Candlestick(x=df.index, open = df['open'], high = df['high'], low = df['low'], close=df['close'], name= 'Candlestick'),
                           go.Scatter(x=df.index, y=df['fast_ma'], line=dict(color='orange', width=1), name='MA Fast' ),
-                          go.Scatter(x=df.index, y=df['close'], line=dict(color='blue', width=1), name='Close' ),
+                          go.Scatter(x=df.index, y=df['close'], line=dict(color='blue', width=2), name='Close' ),
                           go.Scatter(x=df.index, y=df['LSMA'], line=dict(color='black', width=1), name='LSMA' ),
                           go.Scatter(x=df.index, y=df['buy_signal'], mode="markers" , marker=dict(color='green', size = 5), name='Buy' ),
                           go.Scatter(x=df.index, y=df['sell_signal'], mode="markers" , marker=dict(color='red', size = 5), name='Sell' ),
-                          go.Scatter(x=df.index, y=df['slow_ma'], line=dict(color='green', width=1), name='MA Slow' ),])
+                          go.Scatter(x=df.index, y=df['slow_ma'], line=dict(color='green', width=1), name='MA Slow' ),
+                          go.Scatter(x=predictions.forecast_date, y=predictions.forecast_value, line=dict(color='red', width=2), name='Model Prediction' ),])
     fig.update_layout(autosize=True)#, width = 1400,height=800
+    st.write('Графики факта и прогноза')
     st.plotly_chart(fig)
     st.write('Дневная доходность в процентах')
     st.line_chart(df['Strategy']*100)#np.cumprod(1+day_df['STRATEGY'])
@@ -198,7 +229,7 @@ with Algo_strategy:
     # figg = go.Figure(data=[go.Candlestick(x=df.index, open = df['open'], high = df['high'], low = df['low'], close=df['close'])])
     # st.plotly_chart(figg)
 #tech_indicator, pricing_data = st.tabs(["Indicator", "pr_dt"])
-    
+
     df['Cum_sum']=df['pct_change'].cumsum()*100
     def risk_val(row):
         if row['Cum_sum']<=-5:
@@ -216,7 +247,7 @@ with tech_indicator:
     #st.write(ind_list)
     #llenght= st.slider('lenght', min_value=1, max_value=1500, value=20)
     tech_indicatorr = st.selectbox('Выберите технический индикатор/стратегию',options=ind_list)
-    
+
     method = tech_indicatorr
     indicator = pd.DataFrame(getattr(ta,method)(low=df['low'], close=df['close'], high = df['high'], opne = df['open'], volume = df['volume']))
     indicator['Close']= df['close']
