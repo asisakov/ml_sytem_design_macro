@@ -147,6 +147,18 @@ with Algo_strategy:
     df['Strategy'] = df['pct_change']*(df['fast_ma']>df['slow_ma']) - df['pct_change']*(df['fast_ma']<df['slow_ma']) # реализация торговой системы покупка продажа
     #df =df.dropna()
     df = df.drop(df.index[0:slow_ma-1])
+    fig = go.Figure(data=[
+        go.Candlestick(x=df.index, open=df['open'], high=df['high'],
+                       low=df['low'], close=df['close'], name='Candlestick'),
+        go.Scatter(x=df.index, y=df['close'], line=dict(color='blue', width=2),
+                   name='Close'),
+        go.Scatter(x=predictions.forecast_date, y=predictions.forecast_value,
+                   line=dict(color='red', width=2),
+                   name='Model Prediction'), ])
+    fig.update_layout(autosize=True)  # , width = 1400,height=800
+    st.write('График факта и прогноза')
+    st.plotly_chart(fig)
+
     fig = go.Figure(data=[go.Candlestick(x=df.index, open = df['open'], high = df['high'], low = df['low'], close=df['close'], name= 'Candlestick'),
                           go.Scatter(x=df.index, y=df['fast_ma'], line=dict(color='orange', width=1), name='MA Fast' ),
                           go.Scatter(x=df.index, y=df['close'], line=dict(color='blue', width=2), name='Close' ),
@@ -156,7 +168,7 @@ with Algo_strategy:
                           go.Scatter(x=df.index, y=df['slow_ma'], line=dict(color='green', width=1), name='MA Slow' ),
                           go.Scatter(x=predictions.forecast_date, y=predictions.forecast_value, line=dict(color='red', width=2), name='Model Prediction' ),])
     fig.update_layout(autosize=True)#, width = 1400,height=800
-    st.write('Графики факта и прогноза')
+    st.write('Графики со стратегией')
     st.plotly_chart(fig)
     st.write('Дневная доходность в процентах')
     st.line_chart(df['Strategy']*100)#np.cumprod(1+day_df['STRATEGY'])
